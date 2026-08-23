@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, Mail, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, AlertCircle } from 'lucide-react';
 import { AWASLogo } from './AWASLogo';
 import { firebaseAuthHelper } from '../lib/firebase';
 import { dbService } from '../lib/db';
 
 export const AdminAuth = ({ onAdminLoginSuccess, onNavigate }) => {
-  const [email, setEmail] = useState('admin@awasindia.com');
-  const [password, setPassword] = useState('Admin@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -68,16 +68,6 @@ export const AdminAuth = ({ onAdminLoginSuccess, onNavigate }) => {
           </p>
         </div>
 
-        {/* Demo Credentials Box */}
-        <div style={{ backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', padding: '10px 12px', marginBottom: '18px', fontSize: '11px', color: '#166534' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: '700', marginBottom: '3px' }}>
-            <ShieldCheck style={{ width: '14px', height: '14px', color: '#16A34A' }} />
-            <span>Admin Demo Credentials:</span>
-          </div>
-          <div>ID / Email: <strong style={{ color: '#0F172A' }}>admin@awasindia.com</strong></div>
-          <div>Password: <strong style={{ color: '#0F172A' }}>Admin@123</strong></div>
-        </div>
-
         {error && (
           <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', fontSize: '12px', borderRadius: '6px', padding: '10px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <AlertCircle style={{ width: '16px', height: '16px', flexShrink: 0, color: '#DC2626' }} />
@@ -96,7 +86,7 @@ export const AdminAuth = ({ onAdminLoginSuccess, onNavigate }) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@awasindia.com"
+              placeholder="you@example.com"
               style={{
                 width: '100%',
                 backgroundColor: '#F8FAFC',
