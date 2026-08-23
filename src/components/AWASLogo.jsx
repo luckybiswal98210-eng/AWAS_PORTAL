@@ -1,20 +1,34 @@
 import React from 'react';
 
-export const AWASLogo = ({ size = 'medium', className = '' }) => {
-  const sizeMap = {
-    small: 'w-10 h-10',
-    medium: 'w-16 h-16',
-    large: 'w-24 h-24'
+export const AWASLogo = ({ size = 'medium', className = '', style = {} }) => {
+  const pixelMap = {
+    small: { width: '40px', height: '40px' },
+    medium: { width: '64px', height: '64px' },
+    large: { width: '80px', height: '80px' },
+    xlarge: { width: '96px', height: '96px' }
   };
 
-  const currentSize = sizeMap[size] || sizeMap.medium;
+  const dim = pixelMap[size] || pixelMap.medium;
 
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div 
+      className={`flex items-center justify-center ${className}`}
+      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...style }}
+    >
       <img
         src="/awas-logo.png"
         alt="AWAS INDIA Logo"
-        className={`${currentSize} object-contain rounded-full shadow-sm bg-white p-0.5 border border-slate-100 hover:scale-105 transition-transform`}
+        style={{
+          width: dim.width,
+          height: dim.height,
+          minWidth: dim.width,
+          minHeight: dim.height,
+          maxWidth: dim.width,
+          maxHeight: dim.height,
+          objectFit: 'contain',
+          borderRadius: '9999px',
+          display: 'block'
+        }}
       />
     </div>
   );

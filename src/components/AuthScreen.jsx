@@ -115,32 +115,64 @@ export const AuthScreen = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 px-4">
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 16px' }}>
       
-      {/* Centered Login Card (Exact 100% Match to Screenshot) */}
-      <div className="w-full max-w-[390px] bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200/80">
+      {/* Centered Login Card (Exact 100% Match to Screenshot 1) */}
+      <div 
+        style={{
+          width: '100%',
+          maxWidth: '390px',
+          backgroundColor: '#ffffff',
+          borderRadius: '16px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden',
+          border: '1px solid rgba(226, 232, 240, 0.9)'
+        }}
+      >
         
-        {/* Card Header (Deep Royal Navy Blue) */}
-        <div className="bg-[#18396D] text-white pt-6 pb-5 px-6 text-center flex flex-col items-center">
+        {/* Card Header (Deep Royal Navy Blue #18396D) */}
+        <div 
+          style={{
+            backgroundColor: '#18396D',
+            color: '#ffffff',
+            paddingTop: '24px',
+            paddingBottom: '20px',
+            paddingLeft: '24px',
+            paddingRight: '24px',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
           
           {/* Circular Logo Emblem */}
-          <div className="w-[82px] h-[82px] bg-white rounded-full p-1 shadow-md mb-2 flex items-center justify-center">
-            <img 
-              src="/awas-logo.png" 
-              alt="AWAS INDIA" 
-              className="w-full h-full object-contain rounded-full"
-            />
+          <div 
+            style={{
+              width: '84px',
+              height: '84px',
+              backgroundColor: '#ffffff',
+              borderRadius: '9999px',
+              padding: '2px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              marginBottom: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <AWASLogo size="large" />
           </div>
 
-          <h2 className="text-[11px] font-semibold tracking-wider text-blue-200 uppercase">
+          <h2 style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0.05em', color: '#BFDBFE', textTransform: 'uppercase', margin: '0' }}>
             AWAS INDIA / आवास इंडिया
           </h2>
 
-          <h3 className="text-base font-bold text-white mt-1">
+          <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#ffffff', marginTop: '4px', marginBottom: '0' }}>
             {isRegister ? 'Create Account' : 'Welcome Back'}
           </h3>
 
-          <p className="text-[11px] text-blue-200/90 mt-0.5">
+          <p style={{ fontSize: '11px', color: 'rgba(191, 219, 254, 0.9)', marginTop: '2px', marginBottom: '0' }}>
             {isRegister 
               ? 'Register to access AWAS Yojana portal' 
               : 'Sign in to your AWAS Yojana account'}
@@ -148,29 +180,29 @@ export const AuthScreen = ({
         </div>
 
         {/* Card Body */}
-        <div className="p-6 space-y-4">
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-xs rounded-md p-2.5 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
+            <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', fontSize: '12px', borderRadius: '6px', padding: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle style={{ width: '16px', height: '16px', flexShrink: 0, color: '#DC2626' }} />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-md p-2.5 flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 mt-0.5" />
+            <div style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', color: '#047857', fontSize: '12px', borderRadius: '6px', padding: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle2 style={{ width: '16px', height: '16px', flexShrink: 0, color: '#059669' }} />
               <span>{successMsg}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             
             {/* FULL NAME (Only for Register) */}
             {isRegister && (
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  FULL NAME <span className="text-red-500">*</span>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                  FULL NAME <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -178,7 +210,16 @@ export const AuthScreen = ({
                   value={formData.fullName}
                   onChange={handleChange}
                   placeholder="Enter your full name"
-                  className="w-full bg-[#F0F7FF] border border-[#CBD5E1] rounded-md px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#F0F7FF',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: '6px',
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    color: '#1E293B',
+                    boxSizing: 'border-box'
+                  }}
                   required
                 />
               </div>
@@ -186,8 +227,8 @@ export const AuthScreen = ({
 
             {/* EMAIL ADDRESS */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wide mb-1">
-                EMAIL ADDRESS <span className="text-red-500">*</span>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                EMAIL ADDRESS <span style={{ color: '#EF4444' }}>*</span>
               </label>
               <input
                 type="email"
@@ -195,7 +236,16 @@ export const AuthScreen = ({
                 value={formData.email}
                 onChange={handleChange}
                 placeholder={isRegister ? "Enter your email address" : "Enter registered email address"}
-                className="w-full bg-[#F0F7FF] border border-[#CBD5E1] rounded-md px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                style={{
+                  width: '100%',
+                  backgroundColor: '#F0F7FF',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '6px',
+                  padding: '8px 12px',
+                  fontSize: '12px',
+                  color: '#1E293B',
+                  boxSizing: 'border-box'
+                }}
                 required
               />
             </div>
@@ -203,14 +253,23 @@ export const AuthScreen = ({
             {/* STATE (Only for Register) */}
             {isRegister && (
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  STATE <span className="text-red-500">*</span>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                  STATE <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <select
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
-                  className="w-full bg-[#F0F7FF] border border-[#CBD5E1] rounded-md px-3 py-2 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#F0F7FF',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: '6px',
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    color: '#1E293B',
+                    boxSizing: 'border-box'
+                  }}
                   required
                 >
                   <option value="">Select your state</option>
@@ -223,23 +282,43 @@ export const AuthScreen = ({
 
             {/* PASSWORD */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wide mb-1">
-                PASSWORD <span className="text-red-500">*</span>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                PASSWORD <span style={{ color: '#EF4444' }}>*</span>
               </label>
-              <div className="relative">
+              <div style={{ position: 'relative', width: '100%' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className="w-full bg-[#F0F7FF] border border-[#CBD5E1] rounded-md pl-3 pr-12 py-2 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#F0F7FF',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: '6px',
+                    padding: '8px 48px 8px 12px',
+                    fontSize: '12px',
+                    color: '#1E293B',
+                    boxSizing: 'border-box'
+                  }}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium hover:text-slate-600"
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    fontSize: '12px',
+                    color: '#94A3B8',
+                    fontWeight: '500',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -249,23 +328,43 @@ export const AuthScreen = ({
             {/* CONFIRM PASSWORD (Only for Register) */}
             {isRegister && (
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  CONFIRM PASSWORD <span className="text-red-500">*</span>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                  CONFIRM PASSWORD <span style={{ color: '#EF4444' }}>*</span>
                 </label>
-                <div className="relative">
+                <div style={{ position: 'relative', width: '100%' }}>
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Re-enter password"
-                    className="w-full bg-[#F0F7FF] border border-[#CBD5E1] rounded-md pl-3 pr-12 py-2 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#F0F7FF',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: '6px',
+                      padding: '8px 48px 8px 12px',
+                      fontSize: '12px',
+                      color: '#1E293B',
+                      boxSizing: 'border-box'
+                    }}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium hover:text-slate-600"
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      fontSize: '12px',
+                      color: '#94A3B8',
+                      fontWeight: '500',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
                   >
                     {showConfirmPassword ? 'Hide' : 'Show'}
                   </button>
@@ -275,21 +374,21 @@ export const AuthScreen = ({
 
             {/* Remember Me & Forgot Password */}
             {!isRegister && (
-              <div className="flex items-center justify-between text-xs pt-0.5">
-                <label className="flex items-center gap-1.5 cursor-pointer text-slate-600 select-none">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', paddingTop: '2px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: '#475569', userSelect: 'none' }}>
                   <input
                     type="checkbox"
                     name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleChange}
-                    className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-0"
+                    style={{ width: '14px', height: '14px', borderRadius: '3px', accentColor: '#1D4ED8', cursor: 'pointer' }}
                   />
-                  <span className="text-xs">Remember me</span>
+                  <span>Remember me</span>
                 </label>
                 <a 
                   href="#forgot" 
                   onClick={(e) => { e.preventDefault(); alert('Password reset instructions sent to your email.'); }} 
-                  className="text-xs text-[#1D4ED8] font-bold hover:underline"
+                  style={{ fontSize: '12px', color: '#1D4ED8', fontWeight: '700', textDecoration: 'none' }}
                 >
                   Forgot Password?
                 </a>
@@ -298,19 +397,19 @@ export const AuthScreen = ({
 
             {/* Terms Checkbox (Register Only) */}
             {isRegister && (
-              <div className="pt-0.5">
-                <label className="flex items-start gap-2 cursor-pointer text-xs text-slate-600">
+              <div style={{ paddingTop: '2px' }}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer', fontSize: '12px', color: '#475569' }}>
                   <input
                     type="checkbox"
                     name="agreeTerms"
                     checked={formData.agreeTerms}
                     onChange={handleChange}
-                    className="mt-0.5 w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
+                    style={{ marginTop: '2px', width: '14px', height: '14px', accentColor: '#1D4ED8', cursor: 'pointer' }}
                     required
                   />
                   <span>
                     I agree to the{' '}
-                    <a href="#terms" onClick={(e) => e.preventDefault()} className="text-blue-600 hover:underline font-medium">
+                    <a href="#terms" onClick={(e) => e.preventDefault()} style={{ color: '#1D4ED8', textDecoration: 'underline', fontWeight: '500' }}>
                       Terms & Conditions
                     </a>
                   </span>
@@ -319,11 +418,27 @@ export const AuthScreen = ({
             )}
 
             {/* Sign In Button (Solid Royal Blue matching Screenshot) */}
-            <div className="pt-1.5">
+            <div style={{ paddingTop: '4px' }}>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#113C94] hover:bg-[#0D3077] text-white py-2.5 rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                style={{
+                  width: '100%',
+                  backgroundColor: '#113C94',
+                  color: '#ffffff',
+                  padding: '10px 16px',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  border: 'none',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  transition: 'background-color 0.2s'
+                }}
               >
                 {loading ? (
                   <span>Please wait...</span>
@@ -336,14 +451,14 @@ export const AuthScreen = ({
           </form>
 
           {/* Bottom Switch Link */}
-          <div className="text-center text-xs text-slate-600 pt-1">
+          <div style={{ textAlign: 'center', fontSize: '12px', color: '#475569', paddingTop: '4px' }}>
             {isRegister ? (
               <span>
                 Already have an account?{' '}
                 <button
                   type="button"
                   onClick={() => { setIsRegister(false); setError(''); }}
-                  className="text-[#1D4ED8] font-bold hover:underline ml-0.5 cursor-pointer"
+                  style={{ color: '#1D4ED8', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'none' }}
                 >
                   Sign In
                 </button>
@@ -354,7 +469,7 @@ export const AuthScreen = ({
                 <button
                   type="button"
                   onClick={() => { setIsRegister(true); setError(''); }}
-                  className="text-[#1D4ED8] font-bold hover:underline ml-0.5 cursor-pointer"
+                  style={{ color: '#1D4ED8', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'none' }}
                 >
                   Register Now
                 </button>
@@ -366,7 +481,7 @@ export const AuthScreen = ({
       </div>
 
       {/* Footer Text below Card */}
-      <div className="text-center text-xs text-slate-400 mt-3 mb-6">
+      <div style={{ textAlign: 'center', fontSize: '12px', color: '#94A3B8', marginTop: '12px', marginBottom: '24px' }}>
         © Awas India | AWAS Yojana Portal
       </div>
 

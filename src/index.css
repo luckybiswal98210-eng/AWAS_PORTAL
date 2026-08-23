@@ -5,6 +5,12 @@
   padding: 0;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 body {
   background-color: #f1f5f9;
   color: #1e293b;
