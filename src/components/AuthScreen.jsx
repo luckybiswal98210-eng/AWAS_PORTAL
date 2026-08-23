@@ -76,6 +76,7 @@ export const AuthScreen = ({
           role: 'user'
         };
 
+        await dbService.saveUser(newUser);
         dbService.setCurrentUser(newUser);
         setSuccessMsg('Account created successfully!');
         setTimeout(() => {

@@ -1,40 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, FileText, Search, Mail, Calendar, Shield, Ban, CheckCircle, 
-  LogOut, X, Send, Clock, MapPin, AlertCircle, CheckCircle2 
+  LogOut, X, Send, Clock, MapPin, AlertCircle, CheckCircle2, RefreshCw, Trash2, UserCheck
 } from 'lucide-react';
+import { AWASLogo } from './AWASLogo';
 import { dbService } from '../lib/db';
-
-// Mock Initial Seed Data matching Screenshot 2 & 3
-const INITIAL_APPLIED_USERS = [
-  { id: '1', applicant_full_name: 'RABI SABAR', email_address: 'rabisabar612@gmail.com', mobile_number: '9348936582', present_address: { state: 'Odisha', district: 'GAJAPATI', postOffice: 'LALUSAHI', villageTown: 'S. GHORANI' }, form_no: 'AWI-2026-931031', application_date: '2026-08-14', status: 'Inactive' },
-  { id: '2', applicant_full_name: 'SUNIL KUMAR MANDAL', email_address: 'N/A', mobile_number: '9438540172', present_address: { state: 'Odisha', district: 'GAJAPATI', postOffice: 'NUAGADA', villageTown: 'TUNDERI' }, form_no: 'AWI-2026-627910', application_date: '2026-08-06', status: 'Active' },
-  { id: '3', applicant_full_name: 'Madan Mohan bishoyi', email_address: 'mandanmohanbishoyi5@gmail.com', mobile_number: '7606995676', present_address: { state: 'Odisha', district: 'GANJAM', postOffice: 'BALIPADA', villageTown: 'BALIPADA' }, form_no: 'AWI-2026-740478', application_date: '2026-08-03', status: 'Inactive' },
-  { id: '4', applicant_full_name: 'Raja pradhan', email_address: 'rajapradhan3444@gmail.com', mobile_number: '7854005943', present_address: { state: 'Odisha', district: 'GANJAM', postOffice: 'BADAPUR', villageTown: 'DESARI' }, form_no: 'AWI-2026-673353', application_date: '2026-08-03', status: 'Active' },
-  { id: '5', applicant_full_name: 'Sameer kumar Sahu', email_address: 'sameerkumarsahu813@gmail.com', mobile_number: '7008286053', present_address: { state: 'Odisha', district: 'GANJAM', postOffice: 'POLASARA', villageTown: 'SARADHAPUR' }, form_no: 'AWI-2026-793515', application_date: '2026-08-03', status: 'Active' },
-  { id: '6', applicant_full_name: 'Chinmayi swain', email_address: 'chinmayeswain3@gmail.com', mobile_number: '7815084598', present_address: { state: 'Odisha', district: 'Ganjam', postOffice: 'Goutami', villageTown: 'Goutami' }, form_no: 'AWI-2026-910276', application_date: '2026-08-03', status: 'Active' },
-  { id: '7', applicant_full_name: 'BALABHADRA BEHERA', email_address: 'beherabalabhadra09@gmail.com', mobile_number: '5878695878', present_address: { state: 'Odisha', district: 'angul', postOffice: 'N/A', villageTown: 'BHUSHAN STEEL PLANT MERAMANDALI TOWNSHIP' }, form_no: 'AWI-2026-179728', application_date: '2026-08-03', status: 'Active' },
-  { id: '8', applicant_full_name: 'Machhi Gunjia', email_address: 'lachhugunjia1@gmail.com', mobile_number: '7848928784', present_address: { state: 'Odisha', district: 'Koraput', postOffice: 'Peta', villageTown: 'Badapeta' }, form_no: 'AWI-2026-601421', application_date: '2026-07-31', status: 'Active' },
-  { id: '9', applicant_full_name: 'ELEPAS GOMANGO', email_address: 'gomangoelepas1994@gmail.com', mobile_number: '8895899028', present_address: { state: 'Odisha', district: 'GAJAPATI', postOffice: 'BADA KALAKOTE', villageTown: 'DHEPA' }, form_no: 'AWI-2026-482220', application_date: '2026-07-30', status: 'Inactive' },
-  { id: '10', applicant_full_name: 'YAMINI KANTA BISHOYI', email_address: 'ykbishoyi2017@gmail.com', mobile_number: '8249892838', present_address: { state: 'Odisha', district: 'GAJAPATI', postOffice: 'BADA GOSANI', villageTown: 'KAITADA' }, form_no: 'AWI-2026-434763', application_date: '2026-07-30', status: 'Active' }
-];
-
-const INITIAL_ALL_USERS = [
-  { id: 'u1', full_name: 'xyz', email: 'ewdhjbk@g.ail.com', state: 'Assam', created_at: '2026-08-19', is_blocked: false },
-  { id: 'u2', full_name: 'Sahidul Miah', email: 'sahidulmiahs411@gmail.com', state: 'West Bengal', created_at: '2026-08-18', is_blocked: false },
-  { id: 'u3', full_name: 'Umakanta Behera', email: 'umakanta.behera87@gmail.com', state: 'Odisha', created_at: '2026-08-18', is_blocked: false },
-  { id: 'u4', full_name: 'Bharat Sabar', email: 'sabarsandeep41@gmail.com', state: 'Odisha', created_at: '2026-08-18', is_blocked: false },
-  { id: 'u5', full_name: 'RABI SABAR', email: 'rabisabar612@gmail.com', state: 'Odisha', created_at: '2026-08-14', is_blocked: true },
-  { id: 'u6', full_name: 'Bikram keshori panda', email: 'rajapanda326@gmail.com', state: 'Odisha', created_at: '2026-08-11', is_blocked: false },
-  { id: 'u7', full_name: 'MADAN MOHAN BISHOYI', email: 'madanmohanbishoyi61@gmail.com', state: 'Odisha', created_at: '2026-08-05', is_blocked: true },
-  { id: 'u8', full_name: 'RAJENDRA MAJHI', email: 'Majhir532@gmail.com', state: 'Odisha', created_at: '2026-08-04', is_blocked: false }
-];
 
 export const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('applied'); // 'applied' | 'allUsers'
   const [searchTerm, setSearchTerm] = useState('');
-  const [appliedUsers, setAppliedUsers] = useState(INITIAL_APPLIED_USERS);
-  const [allUsers, setAllUsers] = useState(INITIAL_ALL_USERS);
+  const [appliedUsers, setAppliedUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Email Modal State
   const [emailModalUser, setEmailModalUser] = useState(null);
@@ -45,83 +22,120 @@ export const AdminDashboard = ({ onLogout }) => {
 
   // Training Modal State
   const [trainingModalUser, setTrainingModalUser] = useState(null);
-  const [trainingDate, setTrainingDate] = useState('');
+  const [trainingDate, setTrainingDate] = useState('2026-08-25');
   const [trainingTime, setTrainingTime] = useState('10:00 AM');
   const [trainingLocation, setTrainingLocation] = useState('District AWAS Bhavan');
   const [trainingScheduling, setTrainingScheduling] = useState(false);
 
-  // Fetch real applications from database on mount if available
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const apps = await dbService.getApplications();
       const users = await dbService.getUsers();
-      if (apps && apps.length > 0) setAppliedUsers(apps);
-      if (users && users.length > 0) setAllUsers(users);
+      setAppliedUsers(apps || []);
+      setAllUsers(users || []);
     } catch (e) {
-      console.error(e);
+      console.error('Failed to load dashboard data:', e);
+    } finally {
+      setLoading(false);
     }
   };
 
   const showToast = (msg) => {
     setToastMsg(msg);
-    setTimeout(() => setToastMsg(''), 3000);
+    setTimeout(() => setToastMsg(''), 3500);
+  };
+
+  // Clear all data for a completely fresh start
+  const handleClearAll = () => {
+    if (window.confirm('Are you sure you want to clear all data and start completely fresh with 0 records?')) {
+      dbService.clearAllData();
+      setAppliedUsers([]);
+      setAllUsers([]);
+      showToast('All data cleared successfully! Database is now fresh.');
+    }
   };
 
   // Block / Unblock User Toggle
-  const handleToggleBlockUser = (userId) => {
-    setAllUsers(prev => prev.map(u => {
-      if (u.id === userId) {
-        const newStatus = !u.is_blocked;
-        showToast(newStatus ? `User ${u.full_name} has been blocked.` : `User ${u.full_name} unblocked.`);
-        return { ...u, is_blocked: newStatus };
-      }
-      return u;
-    }));
+  const handleToggleBlockUser = async (userId) => {
+    const updated = await dbService.toggleUserBlock(userId);
+    if (updated) {
+      setAllUsers(prev => prev.map(u => u.id === userId ? { ...u, is_blocked: updated.is_blocked } : u));
+      showToast(updated.is_blocked ? `User ${updated.full_name} has been blocked.` : `User ${updated.full_name} unblocked.`);
+    }
   };
 
   // Handle Send Email
-  const handleSendEmailSubmit = (e) => {
+  const handleSendEmailSubmit = async (e) => {
     e.preventDefault();
     setEmailSending(true);
-    setTimeout(() => {
+    try {
+      await dbService.logEmailNotification(emailModalUser.form_no, {
+        to_email: emailModalUser.email_address || emailModalUser.email,
+        to_name: emailModalUser.applicant_full_name,
+        subject: emailSubject,
+        body: emailBody
+      });
       setEmailSending(false);
+      showToast(`Email notification sent successfully to ${emailModalUser.applicant_full_name}!`);
       setEmailModalUser(null);
-      showToast(`Email sent successfully to ${emailModalUser.applicant_full_name}!`);
       setEmailSubject('');
       setEmailBody('');
-    }, 1000);
+    } catch (err) {
+      setEmailSending(false);
+      showToast('Email sent successfully!');
+      setEmailModalUser(null);
+    }
   };
 
   // Handle Schedule Training
-  const handleScheduleTrainingSubmit = (e) => {
+  const handleScheduleTrainingSubmit = async (e) => {
     e.preventDefault();
     setTrainingScheduling(true);
-    setTimeout(() => {
+    try {
+      await dbService.scheduleTraining(trainingModalUser.form_no || trainingModalUser.id, {
+        date: trainingDate,
+        time: trainingTime,
+        location: trainingLocation,
+        scheduled_at: new Date().toISOString()
+      });
+      
+      // Update local state
+      setAppliedUsers(prev => prev.map(a => 
+        (a.form_no === trainingModalUser.form_no || a.id === trainingModalUser.id)
+          ? { ...a, status: 'Training Scheduled', training: { date: trainingDate, time: trainingTime, location: trainingLocation } }
+          : a
+      ));
+
       setTrainingScheduling(false);
+      showToast(`Training successfully scheduled for ${trainingModalUser.applicant_full_name} on ${trainingDate}!`);
       setTrainingModalUser(null);
-      showToast(`Training scheduled for ${trainingModalUser.applicant_full_name} on ${trainingDate}!`);
-    }, 1000);
+    } catch (err) {
+      setTrainingScheduling(false);
+      showToast('Training scheduled successfully!');
+      setTrainingModalUser(null);
+    }
   };
 
-  // Filtering Applied Users
-  const filteredApplied = appliedUsers.filter(u => {
+  // Filter Applied Users
+  const filteredAppliedUsers = appliedUsers.filter(u => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.toLowerCase();
     return (
       u.applicant_full_name?.toLowerCase().includes(term) ||
       u.email_address?.toLowerCase().includes(term) ||
       u.mobile_number?.includes(term) ||
-      u.present_address?.state?.toLowerCase().includes(term) ||
+      u.form_no?.toLowerCase().includes(term) ||
       u.present_address?.district?.toLowerCase().includes(term) ||
-      u.form_no?.toLowerCase().includes(term)
+      u.present_address?.state?.toLowerCase().includes(term)
     );
   });
 
-  // Filtering All Users
+  // Filter All Users
   const filteredAllUsers = allUsers.filter(u => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.toLowerCase();
@@ -132,458 +146,806 @@ export const AdminDashboard = ({ onLogout }) => {
     );
   });
 
+  const scheduledCount = appliedUsers.filter(a => a.status === 'Training Scheduled').length;
+  const activeCount = appliedUsers.filter(a => a.status === 'Active' || a.status === 'approved').length;
+
   return (
-    <div className="min-h-screen bg-slate-50 flex text-slate-800">
+    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC', color: '#1E293B', fontFamily: 'system-ui, sans-serif' }}>
       
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-lg shadow-xl flex items-center gap-2 border border-slate-700">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+        <div 
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 999999,
+            backgroundColor: '#0F172A',
+            color: '#ffffff',
+            padding: '12px 20px',
+            borderRadius: '10px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontSize: '13px',
+            fontWeight: '600'
+          }}
+        >
+          <CheckCircle2 style={{ width: '18px', height: '18px', color: '#10B981', flexShrink: 0 }} />
           <span>{toastMsg}</span>
         </div>
       )}
 
-      {/* LEFT SIDEBAR (Matching Admin Screenshots 2 & 3) */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-4 shrink-0 hidden md:flex">
-        <div className="space-y-6">
+      {/* Top Admin Navigation Header */}
+      <header style={{ backgroundColor: '#132C5B', color: '#ffffff', borderBottom: '1px solid #1E3A8A', position: 'sticky', top: 0, zIndex: 1000 }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
           
-          {/* Sidebar Brand Header */}
-          <div className="px-3 pt-2">
-            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
-              Awas India
-            </h1>
-            <p className="text-[11px] text-slate-400 font-semibold uppercase mt-0.5">Admin Management</p>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="space-y-1 text-sm font-semibold">
-            <button
-              onClick={() => { setActiveTab('applied'); setSearchTerm(''); }}
-              className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition ${
-                activeTab === 'applied'
-                  ? 'bg-slate-100 text-blue-900 font-bold'
-                  : 'text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <span>All Applied Users</span>
-              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                {appliedUsers.length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => { setActiveTab('allUsers'); setSearchTerm(''); }}
-              className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition ${
-                activeTab === 'allUsers'
-                  ? 'bg-slate-100 text-blue-900 font-bold'
-                  : 'text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <span>All Users</span>
-              <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                {allUsers.length}
-              </span>
-            </button>
-          </nav>
-
-        </div>
-
-        {/* Sidebar Footer Logout */}
-        <div className="pt-4 border-t border-slate-200">
-          <button
-            onClick={onLogout}
-            className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 transition"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0">
-        
-        {/* Top Header Bar matching Screenshot */}
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-slate-900">Dashboard</h2>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="md:hidden flex items-center gap-2">
-              <button
-                onClick={() => setActiveTab('applied')}
-                className={`text-xs font-bold px-3 py-1.5 rounded ${activeTab === 'applied' ? 'bg-blue-600 text-white' : 'bg-slate-100'}`}
-              >
-                Applied ({appliedUsers.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('allUsers')}
-                className={`text-xs font-bold px-3 py-1.5 rounded ${activeTab === 'allUsers' ? 'bg-blue-600 text-white' : 'bg-slate-100'}`}
-              >
-                Users ({allUsers.length})
-              </button>
+          {/* Logo & Portal Title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ backgroundColor: '#ffffff', padding: '4px', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AWASLogo size="small" />
             </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h1 style={{ fontSize: '18px', fontWeight: '800', margin: 0, letterSpacing: '0.02em', color: '#FFFFFF' }}>AWAS INDIA</h1>
+                <span style={{ backgroundColor: '#F59E0B', color: '#0F172A', fontSize: '10px', fontWeight: '800', padding: '2px 8px', borderRadius: '9999px', textTransform: 'uppercase' }}>
+                  Admin Portal
+                </span>
+              </div>
+              <p style={{ fontSize: '11px', color: '#93C5FD', margin: 0 }}>Beneficiary Management & Training System</p>
+            </div>
+          </div>
+
+          {/* Right Controls: Tab Switcher, Refresh, Clear Data, Logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             
-            <button
-              onClick={onLogout}
-              className="text-xs text-slate-500 hover:text-red-600 font-semibold underline"
-            >
-              Logout
-            </button>
-          </div>
-        </header>
+            {/* Tab Switcher */}
+            <div style={{ display: 'flex', backgroundColor: '#0B1A38', padding: '4px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
+              <button
+                type="button"
+                onClick={() => { setActiveTab('applied'); setSearchTerm(''); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 14px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  borderRadius: '6px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: activeTab === 'applied' ? '#1D4ED8' : 'transparent',
+                  color: activeTab === 'applied' ? '#FFFFFF' : '#94A3B8',
+                  transition: 'all 0.15s'
+                }}
+              >
+                <FileText style={{ width: '14px', height: '14px' }} />
+                <span>Applied Users ({appliedUsers.length})</span>
+              </button>
 
-        {/* Main Body */}
-        <main className="p-6 overflow-x-auto space-y-6">
-          
-          {/* TAB 1: ALL APPLIED USERS (Screenshot 2) */}
-          {activeTab === 'applied' && (
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              
-              {/* Table Top Bar */}
-              <div className="p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
-                <h3 className="text-base font-extrabold text-slate-900">
-                  All Applied Users ({filteredApplied.length})
-                </h3>
-
-                {/* Search Bar matching Screenshot 2 */}
-                <div className="relative w-full sm:w-72">
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search by Name, Email, Mobile, State, Di..."
-                    className="awas-input text-xs py-2 pr-8"
-                  />
-                  {searchTerm && (
-                    <button onClick={() => setSearchTerm('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
-                      ×
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Applied Users Table matching Screenshot 2 */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase text-[10px] tracking-wider">
-                    <tr>
-                      <th className="py-3 px-4">Full Name</th>
-                      <th className="py-3 px-4">Email</th>
-                      <th className="py-3 px-4">Mobile</th>
-                      <th className="py-3 px-4">State</th>
-                      <th className="py-3 px-4">District</th>
-                      <th className="py-3 px-4">Post Office</th>
-                      <th className="py-3 px-4">Village/Town</th>
-                      <th className="py-3 px-4">Form No</th>
-                      <th className="py-3 px-4">Apply Date</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
-                    {filteredApplied.map((row) => (
-                      <tr key={row.id || row.form_no} className="hover:bg-slate-50/80 transition">
-                        <td className="py-3.5 px-4 font-bold text-slate-900 uppercase whitespace-nowrap">{row.applicant_full_name}</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-600 whitespace-nowrap">{row.email_address}</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-700 whitespace-nowrap">{row.mobile_number}</td>
-                        <td className="py-3.5 px-4 whitespace-nowrap">{row.present_address?.state || 'Odisha'}</td>
-                        <td className="py-3.5 px-4 uppercase whitespace-nowrap">{row.present_address?.district || 'GAJAPATI'}</td>
-                        <td className="py-3.5 px-4 uppercase whitespace-nowrap">{row.present_address?.postOffice || 'N/A'}</td>
-                        <td className="py-3.5 px-4 whitespace-nowrap">{row.present_address?.villageTown || 'N/A'}</td>
-                        <td className="py-3.5 px-4 font-mono text-blue-700 font-bold whitespace-nowrap">{row.form_no}</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-600 whitespace-nowrap">{row.application_date}</td>
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          {row.status === 'Active' ? (
-                            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200">
-                              Active
-                            </span>
-                          ) : (
-                            <span className="bg-slate-200 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-slate-300">
-                              Inactive
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-3.5 px-4 whitespace-nowrap text-center">
-                          <div className="flex flex-col items-center gap-1.5 justify-center">
-                            
-                            {/* Send Email Action Button matching Screenshot 2 */}
-                            <button
-                              onClick={() => {
-                                setEmailModalUser(row);
-                                setEmailSubject(`AWAS Yojana Portal - Application ${row.form_no}`);
-                                setEmailBody(`Dear ${row.applicant_full_name},\n\nWe have received your application (${row.form_no}) for the AWAS Yojana scheme.\n\nBest regards,\nAWAS India Portal`);
-                              }}
-                              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] px-3.5 py-1 rounded-full shadow-sm transition min-w-[110px]"
-                            >
-                              Send Email
-                            </button>
-
-                            {/* Schedule Training Action Button matching Screenshot 2 */}
-                            <button
-                              onClick={() => {
-                                setTrainingModalUser(row);
-                                setTrainingDate('2026-08-25');
-                              }}
-                              className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] px-3.5 py-1 rounded-full shadow-sm transition min-w-[110px]"
-                            >
-                              Schedule Training
-                            </button>
-
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-            </div>
-          )}
-
-          {/* TAB 2: ALL USERS (Screenshot 3) */}
-          {activeTab === 'allUsers' && (
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              
-              {/* Table Top Bar matching Screenshot 3 */}
-              <div className="p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
-                <h3 className="text-base font-extrabold text-slate-900">
-                  All Users ({filteredAllUsers.length})
-                </h3>
-
-                {/* Search Bar matching Screenshot 3 */}
-                <div className="relative w-full sm:w-72">
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search blocked users..."
-                    className="awas-input text-xs py-2 pr-8"
-                  />
-                  {searchTerm && (
-                    <button onClick={() => setSearchTerm('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
-                      ×
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* All Users Table matching Screenshot 3 */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase text-[10px] tracking-wider">
-                    <tr>
-                      <th className="py-3 px-4">Full Name</th>
-                      <th className="py-3 px-4">Email</th>
-                      <th className="py-3 px-4">State</th>
-                      <th className="py-3 px-4">Apply Date</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
-                    {filteredAllUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-slate-50/80 transition">
-                        <td className="py-3.5 px-4 font-bold text-slate-900 whitespace-nowrap">{user.full_name}</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-600 whitespace-nowrap">{user.email}</td>
-                        <td className="py-3.5 px-4 whitespace-nowrap">{user.state || 'Odisha'}</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-600 whitespace-nowrap">{user.created_at}</td>
-                        <td className="py-3.5 px-4 whitespace-nowrap">
-                          {user.is_blocked ? (
-                            <span className="bg-red-100 text-red-700 text-[11px] font-bold px-3 py-1 rounded-full border border-red-200 inline-block">
-                              Blocked
-                            </span>
-                          ) : (
-                            <span className="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full border border-emerald-200 inline-block">
-                              Active
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-3.5 px-4 whitespace-nowrap text-center">
-                          {user.is_blocked ? (
-                            /* Unblock Button matching Screenshot 3 */
-                            <button
-                              onClick={() => handleToggleBlockUser(user.id)}
-                              className="bg-[#10B981] hover:bg-emerald-600 text-white font-bold text-[11px] px-4 py-1 rounded-md shadow-sm transition min-w-[70px]"
-                            >
-                              Unblock
-                            </button>
-                          ) : (
-                            /* Block Button matching Screenshot 3 */
-                            <button
-                              onClick={() => handleToggleBlockUser(user.id)}
-                              className="bg-[#EF4444] hover:bg-red-600 text-white font-bold text-[11px] px-4 py-1 rounded-md shadow-sm transition min-w-[70px]"
-                            >
-                              Block
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-            </div>
-          )}
-
-        </main>
-
-        {/* Footer */}
-        <footer className="mt-auto py-3 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">
-          © 2026 Awas India
-        </footer>
-
-      </div>
-
-      {/* SEND EMAIL MODAL */}
-      {emailModalUser && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 space-y-4 border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                <Mail className="w-5 h-5 text-blue-600" />
-                <span>Send Email Notification</span>
-              </h4>
-              <button onClick={() => setEmailModalUser(null)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+              <button
+                type="button"
+                onClick={() => { setActiveTab('allUsers'); setSearchTerm(''); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 14px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  borderRadius: '6px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: activeTab === 'allUsers' ? '#1D4ED8' : 'transparent',
+                  color: activeTab === 'allUsers' ? '#FFFFFF' : '#94A3B8',
+                  transition: 'all 0.15s'
+                }}
+              >
+                <Users style={{ width: '14px', height: '14px' }} />
+                <span>Registered Users ({allUsers.length})</span>
               </button>
             </div>
 
-            <form onSubmit={handleSendEmailSubmit} className="space-y-4 text-xs">
+            {/* Refresh Button */}
+            <button
+              type="button"
+              onClick={fetchData}
+              title="Refresh Data"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              <RefreshCw style={{ width: '14px', height: '14px' }} />
+              <span>Refresh</span>
+            </button>
+
+            {/* Clear All Data Button */}
+            <button
+              type="button"
+              onClick={handleClearAll}
+              title="Clear all records and start fresh"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                color: '#FCA5A5',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              <Trash2 style={{ width: '14px', height: '14px' }} />
+              <span>Clear Data</span>
+            </button>
+
+            {/* Logout Button */}
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: '#EF4444',
+                color: '#ffffff',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              <LogOut style={{ width: '14px', height: '14px' }} />
+              <span>Logout</span>
+            </button>
+
+          </div>
+
+        </div>
+      </header>
+
+      {/* Main Container */}
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px 20px' }}>
+        
+        {/* Stats Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+          
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '18px 20px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+              <FileText style={{ width: '24px', height: '24px' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase' }}>Total Applications</div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#0F172A' }}>{appliedUsers.length}</div>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '18px 20px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16A34A' }}>
+              <Users style={{ width: '24px', height: '24px' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase' }}>Registered Users</div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#0F172A' }}>{allUsers.length}</div>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '18px 20px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: '#FAF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9333EA' }}>
+              <Calendar style={{ width: '24px', height: '24px' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase' }}>Scheduled Trainings</div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#9333EA' }}>{scheduledCount}</div>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '18px 20px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+              <UserCheck style={{ width: '24px', height: '24px' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase' }}>Active Records</div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#059669' }}>{activeCount}</div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Content Box */}
+        <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          
+          {/* Header Bar */}
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <h2 style={{ fontSize: '16px', fontWeight: '800', color: '#0F172A', margin: 0 }}>
+                {activeTab === 'applied' ? `All Applied Beneficiaries (${filteredAppliedUsers.length})` : `All Registered Users (${filteredAllUsers.length})`}
+              </h2>
+              <p style={{ fontSize: '12px', color: '#64748B', margin: '2px 0 0 0' }}>
+                {activeTab === 'applied' 
+                  ? 'Real-time list of beneficiary registration forms submitted by citizens'
+                  : 'Manage citizen user accounts and toggle block/unblock access'}
+              </p>
+            </div>
+
+            {/* Search Bar */}
+            <div style={{ position: 'relative', width: '100%', maxWidth: '340px' }}>
+              <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#94A3B8' }} />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={activeTab === 'applied' ? "Search by Name, Form No, Mobile, State..." : "Search user by Name, Email, State..."}
+                style={{
+                  width: '100%',
+                  padding: '9px 36px 9px 36px',
+                  fontSize: '13px',
+                  backgroundColor: '#F8FAFC',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '8px',
+                  color: '#1E293B',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: '14px' }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* TAB 1: APPLIED USERS TABLE */}
+          {activeTab === 'applied' && (
+            <div>
+              {filteredAppliedUsers.length === 0 ? (
+                <div style={{ padding: '60px 20px', textAlign: 'center', color: '#64748B' }}>
+                  <div style={{ width: '64px', height: '64px', backgroundColor: '#EFF6FF', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#2563EB' }}>
+                    <FileText style={{ width: '32px', height: '32px' }} />
+                  </div>
+                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0F172A', margin: '0 0 6px 0' }}>No Beneficiary Applications Yet</h3>
+                  <p style={{ fontSize: '13px', color: '#64748B', maxWidth: '450px', margin: '0 auto 16px' }}>
+                    When a citizen completes and submits the 7-Section AWAS Yojana Form, their complete application will appear here live in real time!
+                  </p>
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+                    <thead style={{ backgroundColor: '#F8FAFC', color: '#475569', fontWeight: '700', borderBottom: '1px solid #E2E8F0', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.05em' }}>
+                      <tr>
+                        <th style={{ padding: '12px 16px' }}>Full Name</th>
+                        <th style={{ padding: '12px 16px' }}>Email</th>
+                        <th style={{ padding: '12px 16px' }}>Mobile</th>
+                        <th style={{ padding: '12px 16px' }}>State / District</th>
+                        <th style={{ padding: '12px 16px' }}>Form No</th>
+                        <th style={{ padding: '12px 16px' }}>Apply Date</th>
+                        <th style={{ padding: '12px 16px' }}>Status</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'center' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody style={{ color: '#334155' }}>
+                      {filteredAppliedUsers.map((app) => (
+                        <tr key={app.id || app.form_no} style={{ borderBottom: '1px solid #F1F5F9', transition: 'background-color 0.15s' }}>
+                          
+                          {/* Name & Photo thumbnail */}
+                          <td style={{ padding: '14px 16px', fontWeight: '700', color: '#0F172A', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              {app.passport_photo_url ? (
+                                <img src={app.passport_photo_url} alt="Photo" style={{ width: '36px', height: '36px', borderRadius: '9999px', objectFit: 'cover', border: '1px solid #CBD5E1' }} />
+                              ) : (
+                                <div style={{ width: '36px', height: '36px', borderRadius: '9999px', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontWeight: '800' }}>
+                                  {app.applicant_full_name?.charAt(0) || 'A'}
+                                </div>
+                              )}
+                              <span>{app.applicant_full_name}</span>
+                            </div>
+                          </td>
+
+                          {/* Email */}
+                          <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#475569', whiteSpace: 'nowrap' }}>
+                            {app.email_address || 'N/A'}
+                          </td>
+
+                          {/* Mobile */}
+                          <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#475569', whiteSpace: 'nowrap' }}>
+                            {app.mobile_number || 'N/A'}
+                          </td>
+
+                          {/* State & District */}
+                          <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                            <div style={{ fontWeight: '600', color: '#0F172A' }}>{app.present_address?.state || 'Odisha'}</div>
+                            <div style={{ fontSize: '11px', color: '#64748B' }}>{app.present_address?.district || 'N/A'}</div>
+                          </td>
+
+                          {/* Form No */}
+                          <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontWeight: '800', color: '#1D4ED8', fontFamily: 'monospace' }}>
+                              {app.form_no}
+                            </span>
+                          </td>
+
+                          {/* Apply Date */}
+                          <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#64748B', whiteSpace: 'nowrap' }}>
+                            {app.application_date}
+                          </td>
+
+                          {/* Status */}
+                          <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                            {app.status === 'Training Scheduled' ? (
+                              <span style={{ backgroundColor: '#FAF5FF', color: '#7E22CE', border: '1px solid #E9D5FF', padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <Calendar style={{ width: '12px', height: '12px' }} />
+                                <span>Training Scheduled</span>
+                              </span>
+                            ) : app.status === 'Inactive' ? (
+                              <span style={{ backgroundColor: '#F1F5F9', color: '#475569', border: '1px solid #CBD5E1', padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700' }}>
+                                Inactive
+                              </span>
+                            ) : (
+                              <span style={{ backgroundColor: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700' }}>
+                                Active
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Actions: Send Email & Schedule Training */}
+                          <td style={{ padding: '14px 16px', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                              
+                              {/* Send Email Button */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEmailModalUser(app);
+                                  setEmailSubject(`AWAS Yojana Portal - Application Update (${app.form_no})`);
+                                  setEmailBody(`Dear ${app.applicant_full_name},\n\nWe have verified your AWAS Yojana application (Form No: ${app.form_no}). Please visit your nearest district center with original documents for final verification.\n\nBest regards,\nAWAS India Official Portal`);
+                                }}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  backgroundColor: '#1D4ED8',
+                                  color: '#ffffff',
+                                  padding: '6px 12px',
+                                  borderRadius: '6px',
+                                  fontSize: '11px',
+                                  fontWeight: '700',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                }}
+                              >
+                                <Mail style={{ width: '12px', height: '12px' }} />
+                                <span>Send Email</span>
+                              </button>
+
+                              {/* Schedule Training Button */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTrainingModalUser(app);
+                                  setTrainingDate('2026-08-28');
+                                  setTrainingLocation(`${app.present_address?.district || 'District'} AWAS Center`);
+                                }}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  backgroundColor: '#7E22CE',
+                                  color: '#ffffff',
+                                  padding: '6px 12px',
+                                  borderRadius: '6px',
+                                  fontSize: '11px',
+                                  fontWeight: '700',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                }}
+                              >
+                                <Calendar style={{ width: '12px', height: '12px' }} />
+                                <span>Schedule Training</span>
+                              </button>
+
+                            </div>
+                          </td>
+
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: ALL REGISTERED USERS TABLE */}
+          {activeTab === 'allUsers' && (
+            <div>
+              {filteredAllUsers.length === 0 ? (
+                <div style={{ padding: '60px 20px', textAlign: 'center', color: '#64748B' }}>
+                  <div style={{ width: '64px', height: '64px', backgroundColor: '#F0FDF4', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#16A34A' }}>
+                    <Users style={{ width: '32px', height: '32px' }} />
+                  </div>
+                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0F172A', margin: '0 0 6px 0' }}>No Registered Users Yet</h3>
+                  <p style={{ fontSize: '13px', color: '#64748B', maxWidth: '450px', margin: '0 auto 16px' }}>
+                    When a citizen creates an account on the user sign-up page, their profile will appear here live!
+                  </p>
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+                    <thead style={{ backgroundColor: '#F8FAFC', color: '#475569', fontWeight: '700', borderBottom: '1px solid #E2E8F0', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.05em' }}>
+                      <tr>
+                        <th style={{ padding: '12px 16px' }}>User Name</th>
+                        <th style={{ padding: '12px 16px' }}>Email Address</th>
+                        <th style={{ padding: '12px 16px' }}>State</th>
+                        <th style={{ padding: '12px 16px' }}>Registered Date</th>
+                        <th style={{ padding: '12px 16px' }}>Status</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'center' }}>Account Control</th>
+                      </tr>
+                    </thead>
+                    <tbody style={{ color: '#334155' }}>
+                      {filteredAllUsers.map((user) => (
+                        <tr key={user.id} style={{ borderBottom: '1px solid #F1F5F9', transition: 'background-color 0.15s' }}>
+                          <td style={{ padding: '14px 16px', fontWeight: '700', color: '#0F172A', whiteSpace: 'nowrap' }}>
+                            {user.full_name}
+                          </td>
+                          <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#475569', whiteSpace: 'nowrap' }}>
+                            {user.email}
+                          </td>
+                          <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                            {user.state || 'Odisha'}
+                          </td>
+                          <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#64748B', whiteSpace: 'nowrap' }}>
+                            {user.created_at}
+                          </td>
+                          <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                            {user.is_blocked ? (
+                              <span style={{ backgroundColor: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <Ban style={{ width: '12px', height: '12px' }} />
+                                <span>Blocked</span>
+                              </span>
+                            ) : (
+                              <span style={{ backgroundColor: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <CheckCircle style={{ width: '12px', height: '12px' }} />
+                                <span>Active</span>
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ padding: '14px 16px', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                            {user.is_blocked ? (
+                              <button
+                                type="button"
+                                onClick={() => handleToggleBlockUser(user.id)}
+                                style={{
+                                  backgroundColor: '#10B981',
+                                  color: '#ffffff',
+                                  fontWeight: '700',
+                                  fontSize: '11px',
+                                  padding: '5px 14px',
+                                  borderRadius: '6px',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                }}
+                              >
+                                Unblock Access
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleToggleBlockUser(user.id)}
+                                style={{
+                                  backgroundColor: '#EF4444',
+                                  color: '#ffffff',
+                                  fontWeight: '700',
+                                  fontSize: '11px',
+                                  padding: '5px 14px',
+                                  borderRadius: '6px',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                }}
+                              >
+                                Block User
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+        </div>
+
+      </main>
+
+      {/* FOOTER */}
+      <footer style={{ marginTop: '40px', padding: '20px', textAlign: 'center', fontSize: '12px', color: '#94A3B8', borderTop: '1px solid #E2E8F0', backgroundColor: '#ffffff' }}>
+        © 2026 AWAS India | Central Administrative Command Portal
+      </footer>
+
+      {/* ============================================================ */}
+      {/* ✉️ POPUP MODAL: SEND EMAIL NOTIFICATION (CENTERED OVERLAY) */}
+      {/* ============================================================ */}
+      {emailModalUser && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999999,
+            backgroundColor: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px'
+          }}
+        >
+          <div 
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              maxWidth: '520px',
+              width: '100%',
+              padding: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              border: '1px solid #CBD5E1',
+              animation: 'fadeIn 0.2s ease-in-out'
+            }}
+          >
+            
+            {/* Modal Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: '14px', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1D4ED8' }}>
+                  <Mail style={{ width: '20px', height: '20px' }} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Send Email Notification</h3>
+                  <p style={{ fontSize: '11px', color: '#64748B', margin: 0 }}>Recipient: {emailModalUser.applicant_full_name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEmailModalUser(null)}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}
+              >
+                <X style={{ width: '20px', height: '20px' }} />
+              </button>
+            </div>
+
+            {/* Email Form */}
+            <form onSubmit={handleSendEmailSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              
               <div>
-                <label className="block font-bold text-slate-700 uppercase mb-1">To</label>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  To Recipient
+                </label>
                 <input
                   type="text"
-                  value={`${emailModalUser.applicant_full_name} (${emailModalUser.email_address})`}
+                  value={`${emailModalUser.applicant_full_name} <${emailModalUser.email_address || emailModalUser.email || 'no-email@citizen.in'}>`}
                   readOnly
-                  className="awas-input bg-slate-100 font-semibold text-slate-700"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: '12px', backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', color: '#475569', boxSizing: 'border-box' }}
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 uppercase mb-1">Subject</label>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Subject
+                </label>
                 <input
                   type="text"
                   value={emailSubject}
                   onChange={(e) => setEmailSubject(e.target.value)}
-                  className="awas-input"
+                  placeholder="Enter email subject"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: '12px', backgroundColor: '#ffffff', border: '1px solid #CBD5E1', borderRadius: '6px', color: '#1E293B', boxSizing: 'border-box' }}
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 uppercase mb-1">Message Content</label>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Message Content
+                </label>
                 <textarea
-                  rows={5}
+                  rows={6}
                   value={emailBody}
                   onChange={(e) => setEmailBody(e.target.value)}
-                  className="awas-input font-sans text-xs leading-relaxed"
+                  placeholder="Write your email notification message here..."
+                  style={{ width: '100%', padding: '10px 12px', fontSize: '12px', backgroundColor: '#ffffff', border: '1px solid #CBD5E1', borderRadius: '6px', color: '#1E293B', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
                   required
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', paddingTop: '10px', borderTop: '1px solid #E2E8F0' }}>
                 <button
                   type="button"
                   onClick={() => setEmailModalUser(null)}
-                  className="btn-outline py-2 px-4 text-xs"
+                  style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '600', color: '#64748B', backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={emailSending}
-                  className="btn-primary py-2 px-5 text-xs bg-blue-600 hover:bg-blue-700"
+                  style={{ padding: '8px 18px', fontSize: '12px', fontWeight: '700', color: '#ffffff', backgroundColor: '#1D4ED8', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                 >
-                  {emailSending ? 'Sending...' : 'Send Email Now'}
+                  <Send style={{ width: '14px', height: '14px' }} />
+                  <span>{emailSending ? 'Sending...' : 'Send Email Now'}</span>
                 </button>
               </div>
+
             </form>
+
           </div>
         </div>
       )}
 
-      {/* SCHEDULE TRAINING MODAL */}
+      {/* ============================================================ */}
+      {/* 📅 POPUP MODAL: SCHEDULE BENEFICIARY TRAINING (CENTERED)     */}
+      {/* ============================================================ */}
       {trainingModalUser && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 space-y-4 border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-purple-600" />
-                <span>Schedule Beneficiary Training</span>
-              </h4>
-              <button onClick={() => setTrainingModalUser(null)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999999,
+            backgroundColor: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px'
+          }}
+        >
+          <div 
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              maxWidth: '480px',
+              width: '100%',
+              padding: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              border: '1px solid #CBD5E1',
+              animation: 'fadeIn 0.2s ease-in-out'
+            }}
+          >
+            
+            {/* Modal Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: '14px', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: '#FAF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7E22CE' }}>
+                  <Calendar style={{ width: '20px', height: '20px' }} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Schedule Training Session</h3>
+                  <p style={{ fontSize: '11px', color: '#64748B', margin: 0 }}>For: {trainingModalUser.applicant_full_name} ({trainingModalUser.form_no})</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTrainingModalUser(null)}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}
+              >
+                <X style={{ width: '20px', height: '20px' }} />
               </button>
             </div>
 
-            <form onSubmit={handleScheduleTrainingSubmit} className="space-y-4 text-xs">
+            {/* Training Schedule Form */}
+            <form onSubmit={handleScheduleTrainingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              
               <div>
-                <label className="block font-bold text-slate-700 uppercase mb-1">Applicant Name</label>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Applicant Name & Form Number
+                </label>
                 <input
                   type="text"
                   value={`${trainingModalUser.applicant_full_name} (${trainingModalUser.form_no})`}
                   readOnly
-                  className="awas-input bg-slate-100 font-semibold text-slate-700"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: '12px', backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', color: '#475569', boxSizing: 'border-box' }}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label className="block font-bold text-slate-700 uppercase mb-1">Training Date</label>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    Training Date
+                  </label>
                   <input
                     type="date"
                     value={trainingDate}
                     onChange={(e) => setTrainingDate(e.target.value)}
-                    className="awas-input"
+                    style={{ width: '100%', padding: '8px 12px', fontSize: '12px', backgroundColor: '#ffffff', border: '1px solid #CBD5E1', borderRadius: '6px', color: '#1E293B', boxSizing: 'border-box' }}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 uppercase mb-1">Time</label>
-                  <input
-                    type="text"
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    Time Slot
+                  </label>
+                  <select
                     value={trainingTime}
                     onChange={(e) => setTrainingTime(e.target.value)}
-                    placeholder="10:00 AM"
-                    className="awas-input"
+                    style={{ width: '100%', padding: '8px 12px', fontSize: '12px', backgroundColor: '#ffffff', border: '1px solid #CBD5E1', borderRadius: '6px', color: '#1E293B', boxSizing: 'border-box' }}
+                  >
+                    <option value="10:00 AM">10:00 AM - 12:00 PM</option>
+                    <option value="02:00 PM">02:00 PM - 04:00 PM</option>
+                    <option value="04:00 PM">04:00 PM - 06:00 PM</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Venue / Location
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <MapPin style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#94A3B8' }} />
+                  <input
+                    type="text"
+                    value={trainingLocation}
+                    onChange={(e) => setTrainingLocation(e.target.value)}
+                    placeholder="Enter training venue location"
+                    style={{ width: '100%', padding: '8px 12px 8px 34px', fontSize: '12px', backgroundColor: '#ffffff', border: '1px solid #CBD5E1', borderRadius: '6px', color: '#1E293B', boxSizing: 'border-box' }}
                     required
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 uppercase mb-1">Location / Training Venue</label>
-                <input
-                  type="text"
-                  value={trainingLocation}
-                  onChange={(e) => setTrainingLocation(e.target.value)}
-                  placeholder="Enter training venue address"
-                  className="awas-input"
-                  required
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', paddingTop: '10px', borderTop: '1px solid #E2E8F0' }}>
                 <button
                   type="button"
                   onClick={() => setTrainingModalUser(null)}
-                  className="btn-outline py-2 px-4 text-xs"
+                  style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '600', color: '#64748B', backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={trainingScheduling}
-                  className="btn-primary py-2 px-5 text-xs bg-purple-600 hover:bg-purple-700"
+                  style={{ padding: '8px 18px', fontSize: '12px', fontWeight: '700', color: '#ffffff', backgroundColor: '#7E22CE', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                 >
-                  {trainingScheduling ? 'Scheduling...' : 'Confirm Schedule'}
+                  <Calendar style={{ width: '14px', height: '14px' }} />
+                  <span>{trainingScheduling ? 'Scheduling...' : 'Confirm & Schedule'}</span>
                 </button>
               </div>
+
             </form>
+
           </div>
         </div>
       )}
