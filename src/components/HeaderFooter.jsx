@@ -127,19 +127,19 @@ export const Header = ({ currentUser, onNavigate, onLogout, currentView }) => {
 
 export const Footer = () => {
   return (
-    <footer className="no-print bg-brand-navy text-white mt-12 border-t border-blue-900">
+    <footer className="no-print bg-brand-navy text-white mt-12 border-t border-blue-900" style={{ backgroundColor: '#132C5B' }}>
       {/* Main Footer Info */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 md:grid-cols-2 gap-8">
         
         {/* Left Col: Brand info */}
         <div className="flex items-start gap-4">
-          <div className="bg-white p-2 rounded-full shadow-md shrink-0">
+          <div className="bg-white p-1.5 rounded-full shadow-md shrink-0" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <AWASLogo size="small" />
           </div>
           <div>
-            <h3 className="font-extrabold text-sm tracking-wide text-white uppercase">AWAS INDIA</h3>
-            <p className="font-bold text-xs text-blue-200">AWAS Yojana Portal</p>
-            <p className="text-xs text-blue-300 mt-2 max-w-sm leading-relaxed">
+            <h3 className="font-extrabold text-sm tracking-wide text-white uppercase" style={{ color: '#FFFFFF' }}>AWAS INDIA</h3>
+            <p className="font-bold text-xs" style={{ color: '#93C5FD' }}>AWAS Yojana Portal</p>
+            <p className="text-xs mt-2 max-w-sm leading-relaxed" style={{ color: '#CBD5E1' }}>
               आवास इंडिया — Pan India beneficiary registration portal for AWAS Yojana scheme.
             </p>
           </div>
@@ -147,35 +147,35 @@ export const Footer = () => {
 
         {/* Right Col: Contact Us */}
         <div>
-          <h4 className="font-extrabold text-xs tracking-wider text-blue-200 uppercase mb-3 border-b border-blue-800/80 pb-1">
+          <h4 className="font-extrabold text-xs tracking-wider uppercase mb-3 border-b pb-1" style={{ color: '#93C5FD', borderColor: 'rgba(59, 130, 246, 0.3)' }}>
             CONTACT US
           </h4>
-          <div className="space-y-2 text-xs text-blue-100">
+          <div className="space-y-2 text-xs" style={{ color: '#E2E8F0' }}>
             <div className="flex items-center gap-2.5">
-              <Phone className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Helpline: <strong className="text-white">1800-XXX-XXXX</strong></span>
+              <Phone className="w-4 h-4 text-amber-400 shrink-0" style={{ color: '#FBBF24' }} />
+              <span>Helpline: <strong style={{ color: '#FFFFFF' }}>1800-XXX-XXXX</strong></span>
             </div>
             <div className="flex items-center gap-2.5">
-              <Mail className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Email: <a href="mailto:official@awasindia.com" className="text-blue-200 hover:underline">official@awasindia.com</a></span>
+              <Mail className="w-4 h-4 text-amber-400 shrink-0" style={{ color: '#FBBF24' }} />
+              <span>Email: <a href="mailto:official@awasindia.com" style={{ color: '#93C5FD', textDecoration: 'none' }} className="hover:underline">official@awasindia.com</a></span>
             </div>
             <div className="flex items-center gap-2.5">
-              <Clock className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Mon – Sat: <strong className="text-white">9:00 AM – 6:00 PM</strong></span>
+              <Clock className="w-4 h-4 text-amber-400 shrink-0" style={{ color: '#FBBF24' }} />
+              <span>Mon – Sat: <strong style={{ color: '#FFFFFF' }}>9:00 AM – 6:00 PM</strong></span>
             </div>
           </div>
         </div>
 
       </div>
 
-      {/* Bottom Copyright Strip matching Screenshot */}
-      <div className="bg-slate-900 text-blue-300 text-[11px] py-3 px-4 border-t border-blue-900/60">
+      {/* Bottom Copyright Strip with High-Contrast Colors */}
+      <div style={{ backgroundColor: '#0B1A38', color: '#94A3B8', fontSize: '11px', padding: '12px 16px', borderTop: '1px solid rgba(30, 58, 138, 0.5)' }}>
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-          <div>© 2026 Awas India. All rights reserved.</div>
-          <div className="flex items-center gap-4">
-            <a href="#portal" className="hover:underline">AWAS Yojana Portal</a>
-            <span>|</span>
-            <a href="#programme" className="hover:underline">Pan India Programme</a>
+          <div style={{ color: '#CBD5E1' }}>© 2026 Awas India. All rights reserved.</div>
+          <div className="flex items-center gap-4" style={{ color: '#93C5FD' }}>
+            <a href="#portal" style={{ color: '#93C5FD', textDecoration: 'none' }} className="hover:underline">AWAS Yojana Portal</a>
+            <span style={{ color: '#475569' }}>|</span>
+            <a href="#programme" style={{ color: '#93C5FD', textDecoration: 'none' }} className="hover:underline">Pan India Programme</a>
           </div>
         </div>
       </div>

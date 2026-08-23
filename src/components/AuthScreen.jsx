@@ -477,6 +477,33 @@ export const AuthScreen = ({
             )}
           </div>
 
+          {/* Downside Option: Officer / Admin Login */}
+          <div style={{ textAlign: 'center', paddingTop: '10px', marginTop: '4px', borderTop: '1px solid #F1F5F9' }}>
+            <button
+              type="button"
+              onClick={() => {
+                if (onNavigate) onNavigate('adminAuth');
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '6px',
+                padding: '6px 14px',
+                fontSize: '11px',
+                fontWeight: '600',
+                color: '#475569',
+                cursor: 'pointer',
+                transition: 'all 0.15s'
+              }}
+            >
+              <span>Official / Staff?</span>
+              <strong style={{ color: '#1E40AF' }}>Admin Login →</strong>
+            </button>
+          </div>
+
         </div>
       </div>
 
