@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, FileText, Search, Mail, Calendar, Shield, Ban, CheckCircle, 
-  LogOut, X, Send, Clock, MapPin, AlertCircle, CheckCircle2, RefreshCw, Trash2, UserCheck
+  LogOut, X, Send, Clock, MapPin, AlertCircle, CheckCircle2, RefreshCw, Trash2, UserCheck, Download
 } from 'lucide-react';
 import { AWASLogo } from './AWASLogo';
 import { dbService } from '../lib/db';
@@ -48,6 +48,31 @@ export const AdminDashboard = ({ onLogout }) => {
   const showToast = (msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 3500);
+  };
+
+  // Download complete database backup as JSON
+  const handleDownloadBackup = () => {
+    try {
+      const backupData = {
+        exported_at: new Date().toISOString(),
+        applications_count: appliedUsers.length,
+        users_count: allUsers.length,
+        applications: appliedUsers,
+        users: allUsers
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `awas_india_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      showToast('Database backup downloaded successfully!');
+    } catch (e) {
+      showToast('Failed to generate backup file.');
+    }
   };
 
   // Clear all data for a completely fresh start
@@ -268,6 +293,29 @@ export const AdminDashboard = ({ onLogout }) => {
             >
               <RefreshCw style={{ width: '14px', height: '14px' }} />
               <span>Refresh</span>
+            </button>
+
+            {/* 1-Click Backup Export Button */}
+            <button
+              type="button"
+              onClick={handleDownloadBackup}
+              title="Download full database backup"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                color: '#6EE7B7',
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              <Download style={{ width: '14px', height: '14px' }} />
+              <span>Backup Data</span>
             </button>
 
             {/* Clear All Data Button */}

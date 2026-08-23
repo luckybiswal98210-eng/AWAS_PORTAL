@@ -95,6 +95,8 @@ const INITIAL_FORM = {
   signaturePreview: null,
   thumbFile: null,
   thumbPreview: null,
+  officerStampFile: null,
+  officerStampPreview: null,
 
   // Section 7: Declaration
   agreedDeclaration: false
@@ -354,6 +356,7 @@ export const BeneficiaryForm = ({ currentUser, onSubmitSuccess }) => {
         signing_place: formData.signingPlace,
         signature_url: formData.signaturePreview,
         thumb_impression_url: formData.thumbPreview,
+        officer_stamp_url: formData.officerStampPreview,
         agreed_declaration: formData.agreedDeclaration
       };
 
@@ -1478,15 +1481,27 @@ export const BeneficiaryForm = ({ currentUser, onSubmitSuccess }) => {
                 </label>
               </div>
 
-              {/* Verified by Officer (Office Use Only) */}
+              {/* Verified by Officer (Office Use Only / Upload Stamp) */}
               <div className="flex flex-col items-center">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1 w-full text-center">
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1 w-full text-center">
                   VERIFIED BY OFFICER
                 </label>
-                <div className="border-2 border-dashed border-slate-300 bg-slate-50 w-full min-h-[110px] rounded-lg flex flex-col items-center justify-center p-3 text-center">
-                  <span className="text-xs text-slate-500 font-medium">Authorised Officer</span>
-                  <span className="text-xs text-slate-500 font-medium">Stamp / Signature</span>
-                </div>
+                <label className="upload-box w-full min-h-[110px] flex flex-col items-center justify-center p-3 cursor-pointer">
+                  {formData.officerStampPreview ? (
+                    <img src={formData.officerStampPreview} alt="Officer Stamp" className="h-16 object-contain" />
+                  ) : (
+                    <div className="text-center">
+                      <span className="text-xs font-semibold text-slate-600 block">Click to Upload Officer Stamp</span>
+                      <span className="text-xs text-blue-600 font-bold">Official Stamp / Signature</span>
+                    </div>
+                  )}
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleFileChange(e, 'officerStampFile', 'officerStampPreview')} 
+                    className="hidden" 
+                  />
+                </label>
               </div>
 
             </div>
