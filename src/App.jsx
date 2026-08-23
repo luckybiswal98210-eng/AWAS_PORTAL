@@ -79,24 +79,29 @@ export default function App() {
     );
   }
 
+  const isAuthView = currentView === 'login' || currentView === 'register' || currentView === 'adminAuth';
+
   return (
     <div className="min-h-screen flex flex-col justify-between bg-[#F1F5F9] text-slate-800">
       
-      {/* Top Header */}
-      <Header
-        currentUser={currentUser}
-        currentView={currentView}
-        onNavigate={(view) => setCurrentView(view)}
-        onLogout={handleLogout}
-      />
+      {/* Top Header - Shown on Form, Status, and Success Views */}
+      {!isAuthView && (
+        <Header
+          currentUser={currentUser}
+          currentView={currentView}
+          onNavigate={(view) => setCurrentView(view)}
+          onLogout={handleLogout}
+        />
+      )}
 
       {/* Main View Router */}
-      <main className="flex-grow">
+      <main className="flex-grow flex flex-col justify-center">
         {currentView === 'login' && (
           <AuthScreen
             viewMode="login"
             onNavigate={(view) => setCurrentView(view)}
             onLoginSuccess={handleLoginSuccess}
+            onAdminLoginSuccess={handleAdminLoginSuccess}
           />
         )}
 
@@ -105,6 +110,7 @@ export default function App() {
             viewMode="register"
             onNavigate={(view) => setCurrentView(view)}
             onLoginSuccess={handleLoginSuccess}
+            onAdminLoginSuccess={handleAdminLoginSuccess}
           />
         )}
 

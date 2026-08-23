@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AWASLogo } from './AWASLogo';
-import { ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, AlertCircle, Shield, User, Lock, Mail } from 'lucide-react';
 import { firebaseAuthHelper } from '../lib/firebase';
 import { dbService } from '../lib/db';
 
@@ -13,8 +13,16 @@ const INDIAN_STATES = [
   'Delhi (NCT)', 'Jammu & Kashmir', 'Ladakh', 'Puducherry'
 ];
 
-export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) => {
-  const [isRegister, setIsRegister] = useState(viewMode === 'register');
+export const AuthScreen = ({ 
+  viewMode = 'login', // 'login' | 'register' | 'admin'
+  onNavigate, 
+  onLoginSuccess,
+  onAdminLoginSuccess 
+}) => {
+  // mode: 'userLogin' | 'adminLogin' | 'register'
+  const [authMode, setAuthMode] = useState(
+    viewMode === 'register' ? 'register' : viewMode === 'admin' ? 'adminLogin' : 'userLogin'
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,6 +49,13 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
     setError('');
   };
 
+  const handleModeSwitch = (mode) => {
+    setAuthMode(mode);
+    setError('');
+    setSuccessMsg('');
+    setShowPassword(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -48,7 +63,8 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
     setLoading(true);
 
     try {
-      if (isRegister) {
+      if (authMode === 'register') {
+        // Register logic
         if (!formData.fullName.trim()) throw new Error('Please enter your full name');
         if (!formData.email.trim()) throw new Error('Please enter your email address');
         if (!formData.state) throw new Error('Please select your state');
@@ -72,13 +88,34 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
         };
 
         dbService.setCurrentUser(newUser);
-        setSuccessMsg('Account created successfully! Welcome to AWAS India Portal.');
+        setSuccessMsg('Account created successfully! Redirecting...');
         setTimeout(() => {
-          onLoginSuccess(newUser);
-        }, 800);
+          if (onLoginSuccess) onLoginSuccess(newUser);
+        }, 600);
+
+      } else if (authMode === 'adminLogin') {
+        // Admin Sign In logic
+        if (!formData.email.trim()) throw new Error('Please enter admin email address');
+        if (!formData.password) throw new Error('Please enter admin password');
+
+        const result = await firebaseAuthHelper.signIn(formData.email, formData.password);
+
+        const adminUser = {
+          id: result.user?.uid || 'admin_1',
+          email: formData.email,
+          full_name: 'Administrator',
+          role: 'admin'
+        };
+
+        dbService.setCurrentUser(adminUser);
+        if (onAdminLoginSuccess) {
+          onAdminLoginSuccess(adminUser);
+        } else if (onNavigate) {
+          onNavigate('adminDashboard');
+        }
 
       } else {
-        // Sign In logic
+        // Beneficiary User Sign In logic
         if (!formData.email.trim()) throw new Error('Please enter your registered email address');
         if (!formData.password) throw new Error('Please enter your password');
 
@@ -89,11 +126,11 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
           email: formData.email,
           full_name: result.user?.displayName || formData.email.split('@')[0].toUpperCase(),
           state: 'Odisha',
-          role: formData.email.includes('admin') ? 'admin' : 'user'
+          role: 'user'
         };
 
         dbService.setCurrentUser(loggedInUser);
-        onLoginSuccess(loggedInUser);
+        if (onLoginSuccess) onLoginSuccess(loggedInUser);
       }
     } catch (err) {
       setError(err.message || 'Authentication failed. Please check your credentials.');
@@ -103,45 +140,89 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center py-10 px-4">
-      {/* Container Card */}
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden border border-slate-200">
+    <div className="min-h-[85vh] flex flex-col items-center justify-center py-10 px-4">
+      
+      {/* Main Container Card (Exact matching Screenshot 1) */}
+      <div className="w-full max-w-[440px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 transition-all duration-300">
         
-        {/* Header Card Box (Exact Blue matching Screenshot) */}
-        <div className="bg-brand-navy text-white pt-8 pb-6 px-6 text-center flex flex-col items-center">
-          <AWASLogo size="medium" className="mb-3" />
+        {/* Upside Navigation Tabs: User Login | Admin Login */}
+        <div className="flex border-b border-blue-900/20 bg-[#142A55] text-xs font-bold text-white">
+          <button
+            type="button"
+            onClick={() => handleModeSwitch('userLogin')}
+            className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 transition-all ${
+              authMode === 'userLogin' || authMode === 'register'
+                ? 'bg-[#19376D] text-white border-b-2 border-amber-400 font-extrabold'
+                : 'text-blue-200 hover:text-white hover:bg-[#19376D]/60'
+            }`}
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Beneficiary Login</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleModeSwitch('adminLogin')}
+            className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 transition-all ${
+              authMode === 'adminLogin'
+                ? 'bg-[#19376D] text-white border-b-2 border-amber-400 font-extrabold'
+                : 'text-blue-200 hover:text-white hover:bg-[#19376D]/60'
+            }`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>Admin Login</span>
+          </button>
+        </div>
+
+        {/* Top Header Box (Exact Royal Blue matching Screenshot) */}
+        <div className="bg-[#19376D] text-white pt-6 pb-6 px-6 text-center flex flex-col items-center">
+          
+          {/* Circular Logo Emblem in center */}
+          <div className="bg-white rounded-full p-1 shadow-md mb-3">
+            <AWASLogo size="large" />
+          </div>
+
           <h2 className="text-xs font-semibold tracking-wider text-blue-200 uppercase">
             AWAS INDIA / आवास इंडिया
           </h2>
+
           <h3 className="text-xl font-extrabold mt-1 text-white">
-            {isRegister ? 'Create Account' : 'Welcome Back'}
+            {authMode === 'register' 
+              ? 'Create Account' 
+              : authMode === 'adminLogin' 
+              ? 'Admin Sign In' 
+              : 'Welcome Back'}
           </h3>
+
           <p className="text-xs text-blue-200 mt-1">
-            {isRegister ? 'Register to access AWAS Yojana portal' : 'Sign in to your AWAS Yojana account'}
+            {authMode === 'register'
+              ? 'Register to access AWAS Yojana portal'
+              : authMode === 'adminLogin'
+              ? 'Secure Administrative Access Portal'
+              : 'Sign in to your AWAS Yojana account'}
           </p>
         </div>
 
-        {/* Card Body */}
-        <div className="p-6 sm:p-8">
+        {/* Form Body */}
+        <div className="p-6 sm:p-8 space-y-5">
           
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-xs rounded-md p-3 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0-5" />
-              <span>{error}</span>
+            <div className="bg-red-50 border border-red-200 text-red-700 text-xs rounded-md p-3 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
+              <span className="font-medium">{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-md p-3 flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 mt-0-5" />
-              <span>{successMsg}</span>
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-md p-3 flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 mt-0.5" />
+              <span className="font-medium">{successMsg}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             
             {/* FULL NAME (Only for Register) */}
-            {isRegister && (
+            {authMode === 'register' && (
               <div>
                 <label className="block text-xs font-bold tracking-wider text-slate-700 uppercase mb-1">
                   FULL NAME <span className="text-red-500">*</span>
@@ -168,14 +249,20 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder={isRegister ? 'Enter your email address' : 'Enter registered email address'}
-                className="awas-input"
+                placeholder={
+                  authMode === 'register' 
+                    ? 'Enter your email address' 
+                    : authMode === 'adminLogin'
+                    ? 'admin@awasindia.com'
+                    : 'Enter registered email address'
+                }
+                className="awas-input text-sm"
                 required
               />
             </div>
 
             {/* STATE (Only for Register) */}
-            {isRegister && (
+            {authMode === 'register' && (
               <div>
                 <label className="block text-xs font-bold tracking-wider text-slate-700 uppercase mb-1">
                   STATE <span className="text-red-500">*</span>
@@ -184,7 +271,7 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
-                  className="awas-select"
+                  className="awas-select text-sm"
                   required
                 >
                   <option value="">Select your state</option>
@@ -206,14 +293,18 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder={isRegister ? 'Minimum 6 characters' : 'Enter your password'}
-                  className="awas-input"
+                  placeholder={
+                    authMode === 'register' 
+                      ? 'Minimum 6 characters' 
+                      : 'Enter your password'
+                  }
+                  className="awas-input text-sm pr-14"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-1-2 text-xs font-semibold text-slate-500 hover:text-blue-600 px-2 py-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-700"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -221,7 +312,7 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
             </div>
 
             {/* CONFIRM PASSWORD (Only for Register) */}
-            {isRegister && (
+            {authMode === 'register' && (
               <div>
                 <label className="block text-xs font-bold tracking-wider text-slate-700 uppercase mb-1">
                   CONFIRM PASSWORD <span className="text-red-500">*</span>
@@ -233,13 +324,13 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Re-enter password"
-                    className="awas-input"
+                    className="awas-input text-sm pr-14"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-2 top-1-2 text-xs font-semibold text-slate-500 hover:text-blue-600 px-2 py-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-700"
                   >
                     {showConfirmPassword ? 'Hide' : 'Show'}
                   </button>
@@ -248,7 +339,7 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
             )}
 
             {/* Remember Me / Forgot Password (Sign In Only) */}
-            {!isRegister && (
+            {authMode !== 'register' && (
               <div className="flex items-center justify-between text-xs pt-1">
                 <label className="flex items-center gap-2 cursor-pointer text-slate-600">
                   <input
@@ -256,14 +347,14 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
                     name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleChange}
-                    className="rounded border-slate-300 text-blue-600"
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
                   />
                   <span>Remember me</span>
                 </label>
                 <a 
                   href="#forgot" 
-                  onClick={(e) => { e.preventDefault(); alert('Password reset link sent to your registered email!'); }} 
-                  className="text-blue-600 font-medium hover:underline"
+                  onClick={(e) => { e.preventDefault(); alert('Password reset instructions sent to your email.'); }} 
+                  className="text-blue-600 font-semibold hover:underline"
                 >
                   Forgot Password?
                 </a>
@@ -271,7 +362,7 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
             )}
 
             {/* Agree Terms Checkbox (Register Only) */}
-            {isRegister && (
+            {authMode === 'register' && (
               <div className="pt-1">
                 <label className="flex items-start gap-2 cursor-pointer text-xs text-slate-600">
                   <input
@@ -279,7 +370,7 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
                     name="agreeTerms"
                     checked={formData.agreeTerms}
                     onChange={handleChange}
-                    className="mt-0-5 rounded border-slate-300 text-blue-600"
+                    className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                     required
                   />
                   <span>
@@ -296,18 +387,24 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
               </div>
             )}
 
-            {/* Submit Action Button (Exact Blue matching Screenshot) */}
+            {/* Submit Action Button (Exact Royal Blue matching Screenshot) */}
             <div className="pt-2">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn-primary py-2-5 text-sm rounded-md font-bold shadow-md hover:shadow-lg transition-all"
+                className="w-full bg-[#1A3875] hover:bg-[#132B5B] text-white py-3 text-sm rounded-lg font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? (
                   <span>Authenticating...</span>
                 ) : (
                   <>
-                    <span>{isRegister ? 'Create Account' : 'Sign In'}</span>
+                    <span>
+                      {authMode === 'register' 
+                        ? 'Create Account' 
+                        : authMode === 'adminLogin' 
+                        ? 'Admin Sign In' 
+                        : 'Sign In'}
+                    </span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -316,54 +413,69 @@ export const AuthScreen = ({ viewMode = 'login', onNavigate, onLoginSuccess }) =
 
           </form>
 
-          {/* Toggle link below button */}
-          <div className="mt-6 text-center text-xs text-slate-600 pt-4 border-t border-slate-100 space-y-3">
-            <div>
-              {isRegister ? (
-                <span>
-                  Already have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => { setIsRegister(false); setError(''); }}
-                    className="text-blue-600 font-bold hover:underline"
-                  >
-                    Sign In
-                  </button>
-                </span>
+          {/* Bottom Navigation Links & Options */}
+          <div className="text-center text-xs text-slate-600 pt-2 space-y-3">
+            
+            {/* User Register vs Sign In Toggle */}
+            {authMode === 'userLogin' && (
+              <div>
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => handleModeSwitch('register')}
+                  className="text-blue-600 font-bold hover:underline cursor-pointer"
+                >
+                  Register Now
+                </button>
+              </div>
+            )}
+
+            {authMode === 'register' && (
+              <div>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => handleModeSwitch('userLogin')}
+                  className="text-blue-600 font-bold hover:underline cursor-pointer"
+                >
+                  Sign In
+                </button>
+              </div>
+            )}
+
+            {/* Downside Option: Admin Login / User Login Switcher */}
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-center">
+              {authMode === 'adminLogin' ? (
+                <button
+                  type="button"
+                  onClick={() => handleModeSwitch('userLogin')}
+                  className="text-xs text-blue-700 hover:text-blue-900 font-semibold inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span>← Back to Beneficiary User Login</span>
+                </button>
               ) : (
-                <span>
-                  Don't have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => { setIsRegister(true); setError(''); }}
-                    className="text-blue-600 font-bold hover:underline"
-                  >
-                    Register Now
-                  </button>
-                </span>
+                <button
+                  type="button"
+                  onClick={() => handleModeSwitch('adminLogin')}
+                  className="text-xs text-slate-600 hover:text-slate-900 font-semibold inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md border border-slate-200 transition"
+                >
+                  <Shield className="w-3.5 h-3.5 text-blue-700" />
+                  <span>Officer / Staff Portal? <strong>Admin Login →</strong></span>
+                </button>
               )}
             </div>
 
-            {/* Officer / Admin Portal Direct Link */}
-            <div className="pt-2 border-t border-dashed border-slate-200">
-              <button
-                type="button"
-                onClick={() => onNavigate('adminAuth')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md border border-slate-300 transition"
-              >
-                <span>Officer / Admin Portal Login</span>
-                <span>→</span>
-              </button>
-            </div>
           </div>
 
         </div>
       </div>
 
       {/* Footer Caption */}
-      <div className="text-center text-xs text-slate-500 mt-4">
+      <div className="text-center text-xs text-slate-400 mt-4">
         © Awas India | AWAS Yojana Portal
       </div>
+
     </div>
   );
 };
