@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Header, Footer } from './components/HeaderFooter';
+import { AudioAnnouncementPlayer } from './components/AudioAnnouncementPlayer';
 import { AuthScreen } from './components/AuthScreen';
 import { BeneficiaryForm } from './components/BeneficiaryForm';
 import { ApplicationSuccess } from './components/ApplicationSuccess';
@@ -84,6 +85,9 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col justify-between bg-[#F1F5F9] text-slate-800">
       
+      {/* User-Side Audio Announcement Bar (Prominently at Top) */}
+      <AudioAnnouncementPlayer />
+
       {/* Top Header - Shown on Form, Status, and Success Views */}
       {!isAuthView && (
         <Header

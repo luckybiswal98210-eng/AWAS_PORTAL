@@ -7,6 +7,21 @@ const STORAGE_USERS_KEY = 'awas_india_users_live';
 const STORAGE_CURRENT_USER_KEY = 'awas_india_current_user';
 const STORAGE_TRAININGS_KEY = 'awas_india_trainings_live';
 const STORAGE_EMAILS_KEY = 'awas_india_emails_live';
+const STORAGE_AUDIO_KEY = 'awas_india_audio_announcement_live';
+
+const DEFAULT_AUDIO_ANNOUNCEMENT = {
+  id: 'announcement_2026_08_25',
+  title: 'Official AWAS Yojana Audio Announcement / आवास योजना आधिकारिक घोषणा',
+  english_audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  hindi_audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  english_file_name: 'awas_announcement_english_latest.mp3',
+  hindi_file_name: 'awas_announcement_hindi_latest.mp3',
+  is_enabled: true,
+  autoplay: false,
+  published_at: new Date().toISOString(),
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
+};
 
 export const isMongoConfigured = () => {
   return !!import.meta.env.VITE_MONGODB_API_URL;
@@ -144,12 +159,69 @@ export const dbService = {
     return newLog;
   },
 
+  // -------------------------------------------------------------
+  // AUDIO ANNOUNCEMENT MANAGEMENT
+  // -------------------------------------------------------------
+  getAudioAnnouncement: async () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_AUDIO_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      localStorage.setItem(STORAGE_AUDIO_KEY, JSON.stringify(DEFAULT_AUDIO_ANNOUNCEMENT));
+      return DEFAULT_AUDIO_ANNOUNCEMENT;
+    } catch (e) {
+      return DEFAULT_AUDIO_ANNOUNCEMENT;
+    }
+  },
+
+  saveAudioAnnouncement: async (announcementData, adminUser) => {
+    try {
+      const existing = await dbService.getAudioAnnouncement();
+      const updated = {
+        ...existing,
+        ...announcementData,
+        updated_at: new Date().toISOString(),
+        published_at: announcementData.published_at || new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_AUDIO_KEY, JSON.stringify(updated));
+
+      // Broadcast storage event so open tabs/listeners update immediately
+      window.dispatchEvent(new Event('awas_audio_updated'));
+      return updated;
+    } catch (e) {
+      console.error('Failed to save audio announcement:', e);
+      throw e;
+    }
+  },
+
+  toggleAudioStatus: async (isEnabled) => {
+    const current = await dbService.getAudioAnnouncement();
+    const updated = {
+      ...current,
+      is_enabled: isEnabled,
+      updated_at: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_AUDIO_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('awas_audio_updated'));
+    return updated;
+  },
+
+  resetAudioAnnouncement: async () => {
+    localStorage.setItem(STORAGE_AUDIO_KEY, JSON.stringify(DEFAULT_AUDIO_ANNOUNCEMENT));
+    window.dispatchEvent(new Event('awas_audio_updated'));
+    return DEFAULT_AUDIO_ANNOUNCEMENT;
+  },
+
   // Clear all data to start fresh with 0 records
   clearAllData: () => {
     localStorage.removeItem(STORAGE_APPLICATIONS_KEY);
     localStorage.removeItem(STORAGE_USERS_KEY);
     localStorage.removeItem(STORAGE_TRAININGS_KEY);
     localStorage.removeItem(STORAGE_EMAILS_KEY);
+    // keep default audio intact
+    localStorage.setItem(STORAGE_AUDIO_KEY, JSON.stringify(DEFAULT_AUDIO_ANNOUNCEMENT));
+    window.dispatchEvent(new Event('awas_audio_updated'));
   },
 
   // Auth User Session
